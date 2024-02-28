@@ -1,0 +1,7 @@
+from pybricks import ev3brickas as brick
+from pybricks.ev3devices import Motor
+from pybricks.parameters import Port
+brick.sound.beep()
+test_motor=Motor(Port.B)
+test_motor.run_target(500, 90)
+brick.sound.beep(1000, 500)
