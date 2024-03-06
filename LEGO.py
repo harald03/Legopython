@@ -86,14 +86,14 @@ def robot_pick(position):
     # raises the elbow to pick up the object.
 
     # Rotate to the pick-up position.
-    base_motor.run_target(70, position)
+    base_motor.run_target(60, position)
     # Lower the arm.
-    elbow_motor.run_target(70, -40)
+    elbow_motor.run_target(60, -40)
     # Close the gripper to grab the wheel stack.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
     # Raise the arm to lift the wheel stack.
-    elbow_motor.run_target(100, 40)
-
+    elbow_motor.run_target(60, 0)
+    
 
 def robot_release(position):
     # This function makes the robot base rotate to the indicated
@@ -101,13 +101,13 @@ def robot_release(position):
     # release the object. Then it raises its arm again.
 
     # Rotate to the drop-off position.
-    base_motor.run_target(70, position)
+    base_motor.run_target(60, position)
     # Lower the arm to put the wheel stack on the ground.
-    elbow_motor.run_target(70, -40)
+    elbow_motor.run_target(60, -40)
     # Open the gripper to release the wheel stack.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
-    elbow_motor.run_target(100, 40)
+    elbow_motor.run_target(60, 0)
 
 
 # Play three beeps to indicate that the initialization is complete.
@@ -130,13 +130,11 @@ RIGHT = 0
 # have switched places. Then the loop repeats to do this over and over.
 while True:
     # Move a wheel stack from the left to the middle.
-    robot_pick(LEFT)
+    robot_pick(RIGHT)
     robot_release(MIDDLE)
 
     # Move a wheel stack from the right to the left.
     robot_pick(RIGHT)
     robot_release(LEFT)
 
-    # Move a wheel stack from the middle to the right.
-    robot_pick(MIDDLE)
-    robot_release(RIGHT)
+
