@@ -56,6 +56,7 @@ elbow_sensor = ColorSensor(Port.S2)
 # in place so it does not move.
 elbow_motor.run_time(-30, 1000)
 elbow_motor.run(40)
+elbow_motor.run_time(40, 2000)
 while elbow_sensor.reflection() < 32:
     wait(10)
 elbow_motor.reset_angle(0)
@@ -91,7 +92,7 @@ def robot_pick(position):
     # Close the gripper to grab the wheel stack.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
     # Raise the arm to lift the wheel stack.
-    elbow_motor.run_target(100, 70)
+    elbow_motor.run_target(100, 40)
 
 
 def robot_release(position):
@@ -106,7 +107,7 @@ def robot_release(position):
     # Open the gripper to release the wheel stack.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
-    elbow_motor.run_target(90, 70)
+    elbow_motor.run_target(100, 40)
 
 
 # Play three beeps to indicate that the initialization is complete.
@@ -115,9 +116,9 @@ for i in range(3):
     wait(100)
 
 # Define the three destinations for picking up and moving the wheel stacks.
-LEFT = 160
+LEFT = 200
 MIDDLE = 100
-RIGHT = 40
+RIGHT = 0
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
