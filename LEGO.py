@@ -56,9 +56,7 @@ elbow_sensor = ColorSensor(Port.S2)
 # in place so it does not move.
 elbow_motor.run_time(-30, 1000)
 elbow_motor.run(40)
-elbow_motor.run_time(40, 2000)
-while elbow_sensor.reflection() < 32:
-    wait(10)
+elbow_motor.run_time(35, 2000)
 elbow_motor.reset_angle(0)
 elbow_motor.hold()
 
@@ -136,5 +134,3 @@ while True:
     # Move a wheel stack from the right to the left.
     robot_pick(RIGHT)
     robot_release(LEFT)
-
-
