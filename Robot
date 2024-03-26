@@ -5,3 +5,5 @@ brick.sound.beep()
 test_motor=Motor(Port.B)
 test_motor.run_target(500, 90)
 brick.sound.beep(1000, 500)
+
+https://pybricks.com/ev3-micropython/examples/color_sorter.html
