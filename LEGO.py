@@ -7,18 +7,14 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 
-
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
-
 
 # Create your objects here.
 ev3 = EV3Brick()
 
-
 # Write your program here.
 ev3.speaker.beep()
-
 
 # Configure the gripper motor on Port A with default settings.
 gripper_motor = Motor(Port.A)
@@ -42,12 +38,12 @@ base_motor.control.limits(speed=80, acceleration=120)
 
 # Set up the Touch Sensor. It acts as an end-switch in the base
 # of the robot arm. It defines the starting point of the base.
-base_switch = TouchSensor(Port.S1)
+touch_sensor = TouchSensor(Port.S1)
 
 # Set up the Color Sensor. This sensor detects when the elbow
 # is in the starting position. This is when the sensor sees the
 # white beam up close.
-elbow_sensor = ColorSensor(Port.S2)
+color_sensor = ColorSensor(Port.S2)
 
 # Initialize the elbow. First make it go down for one second.
 # Then make it go upwards slowly (15 degrees per second) until
@@ -64,8 +60,8 @@ elbow_motor.hold()
 # in the base is pressed. Reset the motor angle to make this
 # the zero point. Then hold the motor in place so it does not move.
 base_motor.run(-60)
-while not base_switch.pressed():
-    wait(10)
+while not touch_sensor.pressed():
+    wait(20)
 base_motor.reset_angle(0)
 base_motor.hold()
 
@@ -91,7 +87,24 @@ def robot_pick(position):
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
     # Raise the arm to lift the wheel stack.
     elbow_motor.run_target(60, 0)
+
+def color_identification():
+    global count
+    POSSIBLE_COLORS = [Color.GREEN, Color.RED, Color.BLUE]
+   
+    color = color_sensor.color()
     
+    if color == POSSIBLE_COLORS[0]:
+        robot_release(LEFT)
+        count = 0
+    elif color == POSSIBLE_COLORS[1]:
+      robot_release(MIDDLE)
+      count = 0
+    elif color == POSSIBLE_COLORS[2]:
+        robot_release(150)
+        count = 0
+    else:
+        count += 1 
 
 def robot_release(position):
     # This function makes the robot base rotate to the indicated
@@ -126,11 +139,10 @@ RIGHT = 0
 #
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
-while True:
-    # Move a wheel stack from the left to the middle.
+count = 0
+while (count < 4):
+    # Move a wheel stack from the right to the it's designated position.
     robot_pick(RIGHT)
-    robot_release(MIDDLE)
-
-    # Move a wheel stack from the right to the left.
-    robot_pick(RIGHT)
-    robot_release(LEFT)
+    color_identification()
+    gripper_motor.run_target(200, -90)
+    
