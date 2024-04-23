@@ -1,21 +1,4 @@
-harald0303
-harald0303
-Online
-Yousif
 
-Legitfelle
- lade till 
-Yousif
- i gruppen.
- — 2024-03-03 19:17
-Legitfelle
- startade ett samtal som varade i 2 timmar.
- — 2024-03-03 19:17
-Legitfelle
- lämnade gruppen.
- — 2024-03-03 21:10
-Yousif — 2024-03-27 11:08
-#!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
                                  InfraredSensor, UltrasonicSensor, GyroSensor)
