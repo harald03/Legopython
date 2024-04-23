@@ -7,6 +7,8 @@ from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 
+import _thread
+
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
 
@@ -86,20 +88,20 @@ def robot_pick(position):
     # Close the gripper to grab the wheel stack.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
     # Raise the arm to lift the wheel stack.
-    elbow_motor.run_target(60, 0)
+    elbow_motor.run_target(60, 10)
 
 def color_identification():
     global count
     POSSIBLE_COLORS = [Color.GREEN, Color.RED, Color.BLUE]
-   
+    
     color = color_sensor.color()
     
     if color == POSSIBLE_COLORS[0]:
         robot_release(LEFT)
         count = 0
     elif color == POSSIBLE_COLORS[1]:
-      robot_release(MIDDLE)
-      count = 0
+        robot_release(MIDDLE)
+        count = 0
     elif color == POSSIBLE_COLORS[2]:
         robot_release(150)
         count = 0
@@ -120,7 +122,6 @@ def robot_release(position):
     # Raise the arm.
     elbow_motor.run_target(60, 0)
 
-
 # Play three beeps to indicate that the initialization is complete.
 for i in range(3):
     ev3.speaker.beep()
@@ -139,10 +140,21 @@ RIGHT = 0
 #
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
+    
+def stop_program():
+    while True:
+        if Button.UP in ev3.buttons.pressed():
+        # If the center button is pressed, halt the robot
+            base_motor.stop()
+            elbow_motor.stop()
+            gripper_motor.stop()
+
+_thread.start_new_thread(stop_program, ())
+
 count = 0
 while (count < 4):
+    # Check if any button is pressed
     # Move a wheel stack from the right to the it's designated position.
     robot_pick(RIGHT)
     color_identification()
     gripper_motor.run_target(200, -90)
-    
