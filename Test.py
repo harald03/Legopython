@@ -257,12 +257,21 @@ def pause_program():
 
 
 def stop_all():
+    global stop_program
     while True:
         if Button.DOWN in ev3.buttons.pressed():
-            ev3.screen.print("Shutting down robot")
-            wait(1000)
-            robot_release(50)
-            robot_pick(0)
+            ev3.speaker.beep()
+            current_elbow_angle = elbow_motor.angle()
+            base_motor.hold()
+            elbow_motor.run_target(60, -40)
+            gripper_motor.run_target(200, -90)
+            elbow_motor.run_target(60, 0)
+            for motor in (gripper_motor, elbow_motor, base_motor):
+                motor.stop()
+            ev3.screen.print("Emergency stop triggered!")
+            stop_program = True
+            break 
+
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -273,15 +282,19 @@ def stop_all():
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
 
+stop_program = False
+
 mode_selection()
 _thread.start_new_thread(pause_program, ())
 _thread.start_new_thread(stop_all, ())
 
 count = 0
 while (count < 4):
-    if not paused: # Behövs eller ej?
+    if not stop_program: # Behövs eller ej?
     # Check if any button is pressed
     # Move a wheel stack from the right to the it's designated position.
         robot_pick(RIGHT)
         color_identification()
         gripper_motor.run_target(200, -90)
+    else:
+        break
