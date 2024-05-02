@@ -254,6 +254,14 @@ def stop_program():
                 ev3.screen.print("Resumed")
         wait(100)
 
+def stop_all():
+    while True:
+        if Button.DOWN in ev3.buttons.pressed():
+            ev3.screen.print("Shutting down robot")
+            wait(1000)
+            robot_release(50)
+            break
+
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
 # First, the robot moves the object on the left towards the middle.
@@ -263,15 +271,26 @@ def stop_program():
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
 
-mode_selection()
-_thread.start_new_thread(stop_program, ())
+def main():
+    mode_selection()
+    _thread.start_new_thread(pause_program, ())
+    _thread.start_new_thread(stop_all, ())
 
-count = 0
-while (count < 4):
-    if not paused:
-    # Check if any button is pressed
-    # Move a wheel stack from the right to the it's designated position.
-        robot_pick(RIGHT)
-        color_identification()
-        gripper_motor.run_target(200, -90)
+    count = 0
+    while (count < 4):
+        if not paused:
+        # Check if any button is pressed
+        # Move a wheel stack from the right to the it's designated position.
+            robot_pick(RIGHT)
+            color_identification()
+            gripper_motor.run_target(200, -90)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
 
