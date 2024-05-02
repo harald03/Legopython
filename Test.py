@@ -103,9 +103,9 @@ def robot_pick(position, pause=3000):
     # raises the elbow to pick up the object.
 
     # Rotate to the pick-up position.
-    base_motor.run_target(60, position)
+    base_motor.run_target(100, position)
     # Lower the arm.
-    elbow_motor.run_target(60, -38)
+    elbow_motor.run_target(70, -38)
     wait(pause)
 
     # Close the gripper to grab the wheel stack.
@@ -113,7 +113,7 @@ def robot_pick(position, pause=3000):
     gripper_motor.hold()
 
     if gripper_motor.angle() < -5:
-        elbow_motor.run_target(60, 5)
+        elbow_motor.run_target(70, 5)
         # return True
     else:
         gripper_motor.run_target(200, -90)
@@ -126,13 +126,13 @@ def robot_release(position):
     # release the object. Then it raises its arm again.
 
     # Rotate to the drop-off position.
-    base_motor.run_target(60, position)
+    base_motor.run_target(200, position)
     # Lower the arm to put the wheel stack on the ground.
-    elbow_motor.run_target(60, -40)
+    elbow_motor.run_target(70, -40)
     # Open the gripper to release the wheel stack.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
-    elbow_motor.run_target(60, 0)
+    elbow_motor.run_target(70, 0)
 
 #####
 def set_location():
@@ -255,7 +255,6 @@ def pause_program():
                 ev3.screen.print("Resumed")
         wait(100)
 
-
 def stop_all():
     global stop_program
     while True:
@@ -265,7 +264,6 @@ def stop_all():
             robot_release(50)
             stop_program = True
             break
-
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -292,4 +290,3 @@ while (count < 4):
         gripper_motor.run_target(200, -90)
     else:
         break
-      
