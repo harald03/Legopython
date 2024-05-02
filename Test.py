@@ -235,7 +235,7 @@ def mode_selection():
 
 paused = False  # Variable to track whether the robot is paused or not
 
-def stop_program():
+def pause_program():
     global paused
     while True:
         if Button.UP in ev3.buttons.pressed():
@@ -248,11 +248,13 @@ def stop_program():
                 elbow_motor.stop()
                 gripper_motor.stop()
                 ev3.screen.print("Paused")
+                wait(5000)
             else:
                 # If resumed, print a message and continue from where it was paused
                 ev3.screen.clear()
                 ev3.screen.print("Resumed")
         wait(100)
+
 
 def stop_all():
     while True:
@@ -260,6 +262,7 @@ def stop_all():
             ev3.screen.print("Shutting down robot")
             wait(1000)
             robot_release(50)
+            base_motor.run_target(60,0)
             break
 
 # This is the main part of the program. It is a loop that repeats endlessly.
@@ -274,7 +277,7 @@ def stop_all():
 def main():
     mode_selection()
     _thread.start_new_thread(pause_program, ())
-    _thread.start_new_thread(stop_all, ())
+    # _thread.start_new_thread(stop_all, ())
 
     count = 0
     while (count < 4):
@@ -286,11 +289,6 @@ def main():
             gripper_motor.run_target(200, -90)
 
 if __name__ == "__main__":
+    _thread.start_new_thread(stop_all, ())
     main()
-
-
-
-
-
-
 
