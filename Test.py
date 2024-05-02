@@ -261,8 +261,7 @@ def stop_all():
     while True:
         if Button.DOWN in ev3.buttons.pressed():
             ev3.speaker.beep()
-            current_elbow_angle = elbow_motor.angle()
-            base_motor.hold()
+            base_motor.run_target(60, 50)
             elbow_motor.run_target(60, -40)
             gripper_motor.run_target(200, -90)
             elbow_motor.run_target(60, 0)
@@ -298,3 +297,4 @@ while (count < 4):
         gripper_motor.run_target(200, -90)
     else:
         break
+
