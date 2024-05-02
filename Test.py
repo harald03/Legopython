@@ -260,16 +260,11 @@ def stop_all():
     global stop_program
     while True:
         if Button.DOWN in ev3.buttons.pressed():
-            ev3.speaker.beep()
-            base_motor.run_target(60, 50)
-            elbow_motor.run_target(60, -40)
-            gripper_motor.run_target(200, -90)
-            elbow_motor.run_target(60, 0)
-            for motor in (gripper_motor, elbow_motor, base_motor):
-                motor.stop()
             ev3.screen.print("Emergency stop triggered!")
+            ev3.speaker.beep()
+            robot_release(50)
             stop_program = True
-            break 
+            break
 
 
 # This is the main part of the program. It is a loop that repeats endlessly.
@@ -297,4 +292,4 @@ while (count < 4):
         gripper_motor.run_target(200, -90)
     else:
         break
-
+      
