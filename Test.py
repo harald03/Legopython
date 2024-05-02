@@ -11,7 +11,7 @@ import _thread
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
-
+    
 # Create your objects here.
 ev3 = EV3Brick()
 
@@ -262,8 +262,7 @@ def stop_all():
             ev3.screen.print("Shutting down robot")
             wait(1000)
             robot_release(50)
-            base_motor.run_target(60,0)
-            break
+            robot_pick(0)
 
 # This is the main part of the program. It is a loop that repeats endlessly.
 #
@@ -274,21 +273,15 @@ def stop_all():
 # Now we have a wheel stack on the left and on the right as before, but they
 # have switched places. Then the loop repeats to do this over and over.
 
-def main():
-    mode_selection()
-    _thread.start_new_thread(pause_program, ())
-    # _thread.start_new_thread(stop_all, ())
+mode_selection()
+_thread.start_new_thread(pause_program, ())
+_thread.start_new_thread(stop_all, ())
 
-    count = 0
-    while (count < 4):
-        if not paused:
-        # Check if any button is pressed
-        # Move a wheel stack from the right to the it's designated position.
-            robot_pick(RIGHT)
-            color_identification()
-            gripper_motor.run_target(200, -90)
-
-if __name__ == "__main__":
-    _thread.start_new_thread(stop_all, ())
-    main()
-
+count = 0
+while (count < 4):
+    if not paused: # Behövs eller ej?
+    # Check if any button is pressed
+    # Move a wheel stack from the right to the it's designated position.
+        robot_pick(RIGHT)
+        color_identification()
+        gripper_motor.run_target(200, -90)
