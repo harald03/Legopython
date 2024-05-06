@@ -282,7 +282,7 @@ _thread.start_new_thread(stop_all, ())
 
 count = 0
 while (count < 4):
-    if not stop_program: # Behövs eller ej?
+    if not stop_program:
     # Check if any button is pressed
     # Move a wheel stack from the right to the it's designated position.
         robot_pick(RIGHT)
