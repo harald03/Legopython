@@ -179,13 +179,14 @@ def set_locations():
         while color_not_found:
             gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
             gripper_motor.hold()
+            
             if gripper_motor.angle() < -5:
-                
                 elbow_motor.run_target(70, 5)
                 color_not_found = False
-            else:
-                gripper_motor.run_target(200, -90)
-                gripper_motor.run_target(200, 0)
+
+            gripper_motor.run_target(200, -90)
+            wait(2000)
+            gripper_motor.run_target(200, 0)
 
         # set_more_locations = True
         MODE = 2
