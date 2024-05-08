@@ -114,13 +114,14 @@ def robot_pick(position, pause=3000):
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
     gripper_motor.hold()
 
+
     if gripper_motor.angle() < -5:
+        # Raise the arm to lift the wheel stack.
         elbow_motor.run_target(70, 5)
         return True
     
     gripper_motor.run_target(200, -90)
     return False
-    # Raise the arm to lift the wheel stack.
 
 def robot_release(position):
     # This function makes the robot base rotate to the indicated
@@ -163,6 +164,7 @@ def set_locations():
     global PICKUP_LOCATION
     Locations = {}
     COLORS = {0: "NoColor", 1: "Red", 2: "Blue", 3: "Green"}
+    color_not_found = True
 
     MODE = 0
     if MODE == 0 or MODE == 1:
@@ -171,14 +173,25 @@ def set_locations():
         PICKUP_LOCATION = set_location()
         wait(1000)
         ev3.screen.print("Position set")
-        robot_pick(0)
-        Locations["pickup"] = set_location()
+        Locations["pickup"] = PICKUP_LOCATION
+        ev3.screen.print(Locations)
+
+        while color_not_found:
+            gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
+            gripper_motor.hold()
+            if gripper_motor.angle() < -5:
+                
+                elbow_motor.run_target(70, 5)
+                color_not_found = False
+            else:
+                gripper_motor.run_target(200, -90)
+                gripper_motor.run_target(200, 0)
+
         # set_more_locations = True
         MODE = 2
     
     if MODE == 2:
         ev3.screen.print("Set drop-off locations")
-        ev3.screen.print("Click to set \nnew position")
         color = color_sensor.color()
         newDropOff = set_location()
         color_name = COLORS.get(color, "Unknown")
