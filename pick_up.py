@@ -178,6 +178,7 @@ def set_locations():
     global PICKUP_LOCATION
     global DROPP_OFF_1
     global DROPP_OFF_2
+    global DROPP_OFF_3
     global Locations
 
     ev3.screen.print("Set pickup location")
@@ -201,8 +202,17 @@ def set_locations():
     color = color_sensor.color()
     ev3.screen.print(color)
     DROPP_OFF_2 = set_location()
-    wait(1000)
+    wait(5000)
     Locations[color] = DROPP_OFF_2
+    ev3.screen.print(Locations)
+
+    ev3.screen.print("Set third drop-off locations")
+    check_item()
+    color = color_sensor.color()
+    ev3.screen.print(color)
+    DROPP_OFF_3 = set_location()
+    wait(1000)
+    Locations[color] = DROPP_OFF_3
     ev3.screen.print(Locations)
     elbow_motor.run_target(70, 5)
 
@@ -292,7 +302,7 @@ while (count < 4):
     # Check if any button is pressed
     # Move a wheel stack from the right to the it's designated position.
         robot_pick(PICKUP_LOCATION)
-        color_identification(Color.GREEN, Color.RED, RIGHT)
+        color_identification(Color.GREEN, Color.RED, Color.BLUE)
         gripper_motor.run_target(200, -90)
     else:
         break
