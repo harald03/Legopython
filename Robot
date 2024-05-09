@@ -6,10 +6,12 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
-from pybricks.parameters import Button
+
+import _thread
+
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
-
+    
 # Create your objects here.
 ev3 = EV3Brick()
 
@@ -73,38 +75,53 @@ gripper_motor.run_until_stalled(200, then=Stop.COAST, duty_limit=50)
 gripper_motor.reset_angle(0)
 gripper_motor.run_target(200, -90)
 
+COLORS = []
 
-def robot_pick(position):
+def color_identification(left, middle, middleright):
+    global count
+    POSSIBLE_COLORS = [Color.GREEN, Color.RED, Color.BLUE]
+    
+    color = color_sensor.color()
+    
+    if color == POSSIBLE_COLORS[0]:
+        ev3.screen.print("Green")
+        robot_release(left)
+        count = 0
+    elif color == POSSIBLE_COLORS[1]:
+        ev3.screen.print("Red")
+        robot_release(middle)
+        count = 0
+    elif color == POSSIBLE_COLORS[2]:
+        ev3.screen.print("Blue")
+        robot_release(middleright)
+        count = 0
+    else:
+        count += 1
+
+
+def robot_pick(position, pause=3000):
     # This function makes the robot base rotate to the indicated
     # position. There it lowers the elbow, closes the gripper, and
     # raises the elbow to pick up the object.
 
     # Rotate to the pick-up position.
-    base_motor.run_target(60, position)
+    base_motor.run_target(100, position)
     # Lower the arm.
-    elbow_motor.run_target(60, -40)
+    elbow_motor.run_target(70, -38)
+    wait(pause)
+
     # Close the gripper to grab the wheel stack.
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
-    # Raise the arm to lift the wheel stack.
-    elbow_motor.run_target(60, 0)
+    gripper_motor.hold()
 
-def color_identification():
-    global count
-    POSSIBLE_COLORS = [Color.GREEN, Color.RED, Color.BLUE]
-   
-    color = color_sensor.color()
+
+    if gripper_motor.angle() < -5:
+        # Raise the arm to lift the wheel stack.
+        elbow_motor.run_target(70, 5)
+        return True
     
-    if color == POSSIBLE_COLORS[0]:
-        robot_release(LEFT)
-        count = 0
-    elif color == POSSIBLE_COLORS[1]:
-      robot_release(MIDDLE)
-      count = 0
-    elif color == POSSIBLE_COLORS[2]:
-        robot_release(150)
-        count = 0
-    else:
-        count += 1 
+    gripper_motor.run_target(200, -90)
+    return False
 
 def robot_release(position):
     # This function makes the robot base rotate to the indicated
@@ -112,40 +129,145 @@ def robot_release(position):
     # release the object. Then it raises its arm again.
 
     # Rotate to the drop-off position.
-    base_motor.run_target(60, position)
+    base_motor.run_target(200, position)
     # Lower the arm to put the wheel stack on the ground.
-    elbow_motor.run_target(60, -40)
+    elbow_motor.run_target(70, -40)
     # Open the gripper to release the wheel stack.
     gripper_motor.run_target(200, -90)
     # Raise the arm.
-    elbow_motor.run_target(60, 0)
+    elbow_motor.run_target(70, 0)
+
+#####
+def set_location():
+    """Returns the angles of the set position"""
+    while Button.CENTER not in ev3.buttons.pressed():
+        while Button.LEFT in ev3.buttons.pressed():
+            base_motor.run(50)
+        while Button.RIGHT in ev3.buttons.pressed():
+            base_motor.run(-50)
+        while Button.UP in ev3.buttons.pressed():
+            elbow_motor.run(30)
+        while Button.DOWN in ev3.buttons.pressed():
+            elbow_motor.run(-30)
+
+        base_motor.hold()
+        elbow_motor.hold()
+
+    # elbow_angle = elbow_motor.angle()
+    gripper_motor.run_target(200, -90)
+    return base_motor.angle()
+
+
+def check_item():
+    color_not_found = True
+    while color_not_found:
+            gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
+            gripper_motor.hold()
+
+            if gripper_motor.angle() < -5:
+                elbow_motor.run_target(70, 5)
+                gripper_motor.hold()
+                color_not_found = False
+
+            gripper_motor.run_target(200, -90)
+            wait(2000)
+            gripper_motor.run_target(200, -90)
+
+def set_locations():
+    """Set the pickup and drop off locations"""
+
+    global PICKUP_LOCATION
+    global DROPP_OFF_1
+    global DROPP_OFF_2
+    Locations = {}
+    COLORS = {0: "NoColor", 1: "Red", 2: "Blue", 3: "Green"}
+
+    ev3.screen.print("Set pickup location")
+    PICKUP_LOCATION = set_location()
+    wait(1000)
+    ev3.screen.print("Position set")
+    Locations["pickup"] = PICKUP_LOCATION
+    ev3.screen.print(Locations)
+
+    ev3.screen.print("Set first drop-off locations")
+    check_item()
+    color = color_sensor.color()
+    ev3.screen.print(color)
+    DROPP_OFF_1 = set_location()
+    wait(1000)
+    Locations[color] = DROPP_OFF_1
+    ev3.screen.print(Locations)
+    wait(1000)
+
+    ev3.screen.print("Set second drop-off locations")
+    check_item()
+    color = color_sensor.color()
+    ev3.screen.print(color)
+    DROPP_OFF_2 = set_location()
+    wait(1000)
+    Locations[color] = DROPP_OFF_2
+    ev3.screen.print(Locations)
+    wait(1000)
+    elbow_motor.run_target(70, 5)
+
+
+def mode_selection():
+    """Lets the user select the robot mode"""
+    ev3.screen.print("Left - start")  # ?
+    global MODE
+    MODE = -1
+    while MODE == -1:
+        if Button.LEFT in ev3.buttons.pressed():
+            MODE = 0
+            ev3.screen.print("Starting the program...")
+    wait(1000)
+
+
+
 
 paused = False  # Variable to track whether the robot is paused or not
 
-def handle_button_events():
-    """
-    Function to handle button events:
-    - Pauses the robot if the "UP" button is pressed.
-    - Resumes the robot if the "DOWN" button is pressed.
-    """
+def pause_program():
     global paused
     while True:
         if Button.UP in ev3.buttons.pressed():
-            # If the "UP" button is pressed, pause the robot
-            paused = True
-            hold_motors()  # Hold all motors in place
-        elif Button.DOWN in ev3.buttons.pressed():
-            # If the "DOWN" button is pressed, resume the robot
-            paused = False
-            # Continue executing the main loop
+            # Toggle the paused state when the UP button is pressed
+            paused = not paused
+            ev3.screen.print(paused)
+            if paused == True:
+                # If paused, stop all motors
+                base_motor.stop()
+                elbow_motor.stop()
+                # gripper_motor.stop()
+                ev3.screen.print("Paused")
+                wait(5000)
+            else:
+                # If resumed, print a message and continue from where it was paused
+                ev3.screen.clear()
+                ev3.screen.print("Resumed")
+        wait(100)
 
-        wait(100)  # Wait for a short time to avoid busy-waiting
+def stop_all():
+    global stop_program
+    while True:
+        if Button.DOWN in ev3.buttons.pressed():
+            ev3.screen.print("Emergency stop triggered!")
+            ev3.speaker.beep()
+            robot_release(50)
+            stop_program = True
+            break
 
-# Define your other functions here
+# This is the main part of the program. It is a loop that repeats endlessly.
+#
+# First, the robot moves the object on the left towards the middle.
+# Second, the robot moves the object on the right towards the left.
+# Finally, the robot moves the object that is now in the middle, to the right.
+#
+# Now we have a wheel stack on the left and on the right as before, but they
+# have switched places. Then the loop repeats to do this over and over.
 
-# Start the button event handling in a separate thread
-import _thread
-_thread.start_new_thread(handle_button_events, ())
+
+stop_program = False
 
 # Play three beeps to indicate that the initialization is complete.
 for i in range(3):
@@ -155,23 +277,24 @@ for i in range(3):
 # Define the three destinations for picking up and moving the wheel stacks.
 LEFT = 200
 MIDDLE = 100
+MIDDLERIGHT = 150
 RIGHT = 0
 
+PICKUP_LOCATION = 0
+MODE = 0
 
-count = 0 
+# mode_selection()
+# set_locations()
+_thread.start_new_thread(pause_program, ())
+_thread.start_new_thread(stop_all, ())
+
+count = 0
 while (count < 4):
+    if not stop_program:
+    # Check if any button is pressed
     # Move a wheel stack from the right to the it's designated position.
-    robot_pick(RIGHT)
-    color_identification()
-    gripper_motor.run_target(200, -90)
-# Main loop for color detection and robot operation
-
-
-# This is the main part of the program. It is a loop that repeats endlessly.
-#
-# First, the robot moves the object on the left towards the middle.
-# Second, the robot moves the object on the right towards the left.
-# Finally, the robot moves the object that is now in the middle, to the right.
-
-# Now we have a wheel stack on the left and on the right as before, but they
-# have switched places. Then the loop repeats to do this over and over.
+        robot_pick(RIGHT)
+        color_identification(LEFT, MIDDLE, MIDDLERIGHT)
+        gripper_motor.run_target(200, -90)
+    else:
+        break
