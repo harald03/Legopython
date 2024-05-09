@@ -153,80 +153,63 @@ def set_location():
         base_motor.hold()
         elbow_motor.hold()
 
-    elbow_angle = elbow_motor.angle()
+    # elbow_angle = elbow_motor.angle()
     gripper_motor.run_target(200, -90)
-    return (base_motor.angle(), elbow_angle)
+    return base_motor.angle()
 
+
+def check_item():
+    color_not_found = True
+    while color_not_found:
+            gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
+            gripper_motor.hold()
+
+            if gripper_motor.angle() < -5:
+                elbow_motor.run_target(70, 5)
+                gripper_motor.hold()
+                color_not_found = False
+
+            gripper_motor.run_target(200, -90)
+            wait(2000)
+            gripper_motor.run_target(200, -90)
 
 def set_locations():
     """Set the pickup and drop off locations"""
 
     global PICKUP_LOCATION
+    global DROPP_OFF_1
+    global DROPP_OFF_2
     Locations = {}
     COLORS = {0: "NoColor", 1: "Red", 2: "Blue", 3: "Green"}
-    color_not_found = True
 
-    MODE = 0
-    if MODE == 0 or MODE == 1:
-        ev3.screen.print("Set pickup location")
+    ev3.screen.print("Set pickup location")
+    PICKUP_LOCATION = set_location()
+    wait(1000)
+    ev3.screen.print("Position set")
+    Locations["pickup"] = PICKUP_LOCATION
+    ev3.screen.print(Locations)
 
-        PICKUP_LOCATION = set_location()
-        wait(1000)
-        ev3.screen.print("Position set")
-        Locations["pickup"] = PICKUP_LOCATION
-        ev3.screen.print(Locations)
+    ev3.screen.print("Set first drop-off locations")
+    check_item()
+    color = color_sensor.color()
+    ev3.screen.print(color)
+    DROPP_OFF_1 = set_location()
+    wait(1000)
+    Locations[color] = DROPP_OFF_1
+    ev3.screen.print(Locations)
+    wait(1000)
 
-        while color_not_found:
-            gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
-            gripper_motor.hold()
-            
-            if gripper_motor.angle() < -5:
-                elbow_motor.run_target(70, 5)
-                color_not_found = False
+    ev3.screen.print("Set second drop-off locations")
+    check_item()
+    color = color_sensor.color()
+    ev3.screen.print(color)
+    DROPP_OFF_2 = set_location()
+    wait(1000)
+    Locations[color] = DROPP_OFF_2
+    ev3.screen.print(Locations)
+    wait(1000)
+    elbow_motor.run_target(70, 5)
 
-            gripper_motor.run_target(200, -90)
-            wait(2000)
-            gripper_motor.run_target(200, 0)
-
-        # set_more_locations = True
-        MODE = 2
-    
-    if MODE == 2:
-        ev3.screen.print("Set drop-off locations")
-        color = color_sensor.color()
-        newDropOff = set_location()
-        color_name = COLORS.get(color, "Unknown")
-        Locations[color_name] = newDropOff
-        ev3.screen.print(Locations)
-        wait(1000)
-
-
-
-    while set_more_locations:
-        if Button.CENTER in ev3.buttons.pressed():
-            if MODE == 0 or MODE == 1:
-                if robot_pick(PICKUP_LOCATION): # Raden kan ej göra något ännu
-                    color = color_identification()
-                    color_name = color.get(color, 'unknown')
-                    COLORS.append(color_name)
-                    ev3.screen.print("Set new location")
-                    ev3.screen.print("\n\nClick to set \nnew position")
-                else:
-                    set_more_locations = False
-            # elif MODE == 2:
-            #     if pickup(SHARED_LOCATION):
-            #         color = read_color()
-            #         COLORS.append(rgbp_to_hex(color))
-            #         ev3.screen.print("Set new location")
-            #         LOCATIONS.append(set_location())
-            #         ev3.screen.print("Click to set \nnew position")
-            #     else:
-            #         set_more_locations = False
-
-    # if MODE == 2:
-    #     move_base(PICKUP_LOCATION)
-
-#####
 
 def mode_selection():
     """Lets the user select the robot mode"""
@@ -255,7 +238,7 @@ def pause_program():
                 # If paused, stop all motors
                 base_motor.stop()
                 elbow_motor.stop()
-                #gripper_motor.stop()
+                # gripper_motor.stop()
                 ev3.screen.print("Paused")
                 wait(5000)
             else:
@@ -297,7 +280,7 @@ MIDDLE = 100
 MIDDLERIGHT = 150
 RIGHT = 0
 
-PICKUP_LOCATION = None
+PICKUP_LOCATION = 0
 MODE = 0
 
 # mode_selection()
@@ -310,7 +293,7 @@ while (count < 4):
     if not stop_program:
     # Check if any button is pressed
     # Move a wheel stack from the right to the it's designated position.
-        robot_pick(RIGHT)
+        robot_pick(PICKUP_LOCATION)
         color_identification(LEFT, MIDDLE, MIDDLERIGHT)
         gripper_motor.run_target(200, -90)
     else:
