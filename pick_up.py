@@ -280,12 +280,6 @@ for i in range(3):
     ev3.speaker.beep()
     wait(100)
 
-# Define the three destinations for picking up and moving the wheel stacks.
-LEFT = 200
-MIDDLE = 100
-MIDDLERIGHT = 150
-RIGHT = 0
-
 PICKUP_LOCATION = 0
 MODE = 0
 
