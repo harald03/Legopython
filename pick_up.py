@@ -85,15 +85,15 @@ def color_identification(left, middle, middleright):
     
     if color == POSSIBLE_COLORS[0]:
         ev3.screen.print("Green")
-        robot_release(left)
+        robot_release(Locations.get(left))
         count = 0
     elif color == POSSIBLE_COLORS[1]:
         ev3.screen.print("Red")
-        robot_release(middle)
+        robot_release(Locations.get(middle))
         count = 0
     elif color == POSSIBLE_COLORS[2]:
         ev3.screen.print("Blue")
-        robot_release(middleright)
+        robot_release(Locations.get(middleright))
         count = 0
     else:
         count += 1
