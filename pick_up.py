@@ -114,7 +114,6 @@ def robot_pick(position, pause=3000):
     gripper_motor.run_until_stalled(200, then=Stop.HOLD, duty_limit=50)
     gripper_motor.hold()
 
-
     if gripper_motor.angle() < -5:
         # Raise the arm to lift the wheel stack.
         elbow_motor.run_target(70, 5)
@@ -168,10 +167,10 @@ def check_item():
                 elbow_motor.run_target(70, 5)
                 gripper_motor.hold()
                 color_not_found = False
-
-            gripper_motor.run_target(200, -90)
-            wait(2000)
-            gripper_motor.run_target(200, -90)
+            else:
+                gripper_motor.run_target(200, -90)
+                wait(2000)
+                gripper_motor.run_target(200, -90)
 
 def set_locations():
     """Set the pickup and drop off locations"""
@@ -179,12 +178,11 @@ def set_locations():
     global PICKUP_LOCATION
     global DROPP_OFF_1
     global DROPP_OFF_2
-    Locations = {}
-    COLORS = {0: "NoColor", 1: "Red", 2: "Blue", 3: "Green"}
+    global Locations
 
     ev3.screen.print("Set pickup location")
     PICKUP_LOCATION = set_location()
-    wait(1000)
+    wait(5000)
     ev3.screen.print("Position set")
     Locations["pickup"] = PICKUP_LOCATION
     ev3.screen.print(Locations)
@@ -194,10 +192,9 @@ def set_locations():
     color = color_sensor.color()
     ev3.screen.print(color)
     DROPP_OFF_1 = set_location()
-    wait(1000)
+    wait(5000)
     Locations[color] = DROPP_OFF_1
     ev3.screen.print(Locations)
-    wait(1000)
 
     ev3.screen.print("Set second drop-off locations")
     check_item()
@@ -207,7 +204,6 @@ def set_locations():
     wait(1000)
     Locations[color] = DROPP_OFF_2
     ev3.screen.print(Locations)
-    wait(1000)
     elbow_motor.run_target(70, 5)
 
 
@@ -283,6 +279,8 @@ RIGHT = 0
 PICKUP_LOCATION = 0
 MODE = 0
 
+Locations = {}
+
 # mode_selection()
 set_locations()
 _thread.start_new_thread(pause_program, ())
@@ -294,7 +292,7 @@ while (count < 4):
     # Check if any button is pressed
     # Move a wheel stack from the right to the it's designated position.
         robot_pick(PICKUP_LOCATION)
-        color_identification(LEFT, MIDDLE, MIDDLERIGHT)
+        color_identification(Color.GREEN, Color.RED, RIGHT)
         gripper_motor.run_target(200, -90)
     else:
         break
