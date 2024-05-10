@@ -25,7 +25,9 @@ This project involves the development of a Python script for controlling a lego 
 4. In order to use the emergency stop button press the button down.
 
 **Arguments and Controls:**
-- When the pick-up and drop-off locations have been set the robot will continue sorting the objects util the stop button is pressed or the robot doesnt have any objectd to pick up in four attempts..
+- When the pick-up and drop-off locations have been set the robot will continue sorting the objects util the stop button is pressed or the robot doesnt have any objectd to pick up in four attempts.
+- In the set-up stage the robot will start by saving the pick-up location that is manually set by the user.
+- When the drop-off is being set the robot will first pick-up an object and observe its color before the user can set the location for the designated color.
 
 ## Features
 
