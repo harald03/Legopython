@@ -2,30 +2,30 @@
 
 ## Introduction
 
-This project involves a Python script that operates a robotic arm using the pybricks-micropython library on an EV3 Brick. The robotic arm is programmed to execute tasks such as picking up, sorting, and dropping objects based on specific attributes like color.
+
+This project involves the development of a Python script for controlling a lego robotic arm utilizing the EV3 Brick platform. The objective is to program the robotic arm to perform tasks including object manipulation and color sorting.
 
 ## Getting started
 
 **Prerequisites:**
-- An EV3 Brick with pybricks-micropython firmware.
-- A computer with USB port and internet access.
+- A Lego robot with EV3 Brick.
+- A computer.
 
 **Setup Instructions:**
-1. Clone the project repository to your local machine using `git clone https://github.com/HolyCatz/Lego_group14`.
-2. Connect the EV3 Brick to your computer using a USB cable.
-3. Transfer the `main.py` script to your EV3 Brick using your preferred IDE that supports EV3 development.
+1. Clone the project repository to your local computer.
+2. Connect your computer to the EV3 Brick using a USB cable.
+3. Transfer the `main.py` script to your EV3 Brick using vs code or any other code editor that supports EV3 development.
 
 ## Building and running
 
 **Running the Program:**
 1. Power on the EV3 Brick.
-2. Use the center button on the EV3 Brick to launch the script.
-3. Utilize the on-screen prompts to operate the robotic arm, navigating through options to select tasks or settings.
-4. To stop or pause the script, press and hold the center button. This can be used for emergency stops or pausing the operation.
+2. Select the `main.py` file that was upploaded to the EV3 Brick.
+3. Follow the instructions on the EV3 Brick.
+4. In order to use the emergency stop button press the button down.
 
 **Arguments and Controls:**
-- The script supports various runtime arguments for customizing operations, such as defining drop-off zones or modifying timing intervals.
-- The robotic arm's actions can be fine-tuned in real-time based on the observed outputs and requirements.
+- When the pick-up and drop-off locations have been set the robot will continue sorting the objects util the stop button is pressed or the robot doesnt have any objectd to pick up in four attempts..
 
 ## Features
 
